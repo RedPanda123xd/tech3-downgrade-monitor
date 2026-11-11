@@ -50,8 +50,9 @@ def save_remote(repo,state,old,sha):
 def main():
     repo=os.environ.get('GITHUB_REPOSITORY','')
     if not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+',repo):raise ValueError('GITHUB_REPOSITORY is missing or invalid')
-    if not os.environ.get('GITHUB_TOKEN') or not os.environ.get('NTFY_TOPIC'):
-        raise ValueError('GitHub workflow token and NTFY_TOPIC secret are required')
+    from opportunity_push import config,publish
+    if not os.environ.get('GITHUB_TOKEN') or not config():
+        raise ValueError('GitHub workflow token and a configured phone notification channel are required')
     event_path=os.environ.get('GITHUB_EVENT_PATH')
     if not event_path or json.loads(Path(event_path).read_bytes()).get('repository',{}).get('private') is not False:
         raise ValueError('Zero-cost guard: this runner requires a public GitHub repository')
@@ -62,7 +63,6 @@ def main():
         run=subprocess.run([sys.executable,'-X','utf8','research/opportunity_scanner.py','--scheduled'],cwd=ROOT)
         if run.returncode:failure='The public-data scanner failed; no complete check can be confirmed.'
         if not failure and os.environ.get('CLOUD_SEND_TEST')=='1':
-            from opportunity_push import config,publish
             receipt=publish(config(),'TEST - Cloud-Scanner auf GitHub',
                 'Dieser Test kommt direkt von GitHub Actions. Dein PC wird fuer diesen Cloud-Lauf nicht benoetigt. Kein Handelssignal. Technische Einstiegssignale werden als Nachrichtenpruefung ausstehend gekennzeichnet.')
             save=ROOT/'cache'/'opportunity-scanner'/'cloud_test_receipt.json'

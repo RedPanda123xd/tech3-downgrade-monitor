@@ -1,4 +1,4 @@
-"""Android ntfy delivery with separate retry and deduplication state."""
+"""Phone delivery through Telegram or ntfy with retry and deduplication state."""
 from argparse import ArgumentParser
 from datetime import datetime, timezone
 from html import escape
@@ -23,6 +23,12 @@ def save(path,value):
     temp.replace(path)
 
 def config():
+    token=os.environ.get('TELEGRAM_BOT_TOKEN','').strip()
+    chat=os.environ.get('TELEGRAM_CHAT_ID','').strip()
+    if token or chat:
+        if not re.fullmatch(r'[0-9]+:[A-Za-z0-9_-]{20,}',token) or not re.fullmatch(r'[1-9][0-9]*',chat):
+            raise ValueError('Complete Telegram bot token and private chat ID are required')
+        return {'enabled':True,'provider':'telegram','token':token,'chat_id':chat}
     topic=os.environ.get('NTFY_TOPIC')
     if topic:
         value={'enabled':True,'server':'https://ntfy.sh','topic':topic}
@@ -35,6 +41,24 @@ def config():
 
 def publish(settings,title,message,click=None):
     import requests
+    if settings.get('provider')=='telegram':
+        body=title+'\n\n'+message
+        if click and click.startswith('https://') and click not in body:body+='\n'+click
+        if len(body)>4096:raise ValueError('Telegram message exceeds the delivery limit')
+        try:
+            response=requests.post('https://api.telegram.org/bot'+settings['token']+'/sendMessage',
+                json={'chat_id':settings['chat_id'],'text':body,'disable_notification':False,
+                      'link_preview_options':{'is_disabled':True}},timeout=(8,20))
+            if not response.ok:raise ValueError(f'Telegram rejected the notification (HTTP {response.status_code})')
+            receipt=response.json()
+            result=receipt.get('result',{})
+            if not receipt.get('ok') or not result.get('message_id'):
+                raise ValueError('Telegram returned no message receipt')
+            # The public cloud state must never contain the token or private chat ID.
+            return {'message_id':str(result['message_id']),'provider':'telegram',
+                    'accepted_utc':datetime.now(timezone.utc).isoformat()}
+        except requests.RequestException as exc:
+            raise ValueError('Telegram request failed: '+type(exc).__name__) from None
     headers={'Title':title,'Priority':'4','Tags':'chart_with_upwards_trend',
              'Content-Type':'text/plain; charset=utf-8'}
     if click and click.startswith('https://'):headers['Click']=click
@@ -94,7 +118,8 @@ def deliver(rows,offline=False,allow_unreviewed=False):
             pending=row.get('attribution') in {'Unreviewed','Attribution unverifiable','Attribution timing or news check incomplete'}
             if (row.get('status')!='Next opening' or row.get('rules')!=['TECH3_SMA5']
                     or not (reviewed or (allow_unreviewed and pending))):continue
-            key=('' if reviewed else 'candidate:')+row['event_id']+'_'+row['entry']
+            channel='telegram:' if settings.get('provider')=='telegram' else ''
+            key=channel+('' if reviewed else 'candidate:')+row['event_id']+'_'+row['entry']
             if key in ledger:continue
             try:
                 title=row['ticker']+' downgrade-reversal setup' if reviewed else 'UNGEPRUEFT: '+row['ticker']+' SMA5-Setup'

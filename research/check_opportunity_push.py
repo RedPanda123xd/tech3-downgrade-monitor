@@ -3,6 +3,8 @@ from pathlib import Path
 from uuid import uuid4
 from unittest.mock import patch
 import json
+import os
+import requests
 import opportunity_push as push
 
 folder=Path(__file__).resolve().parents[1]/'qa'/'push-tests'/uuid4().hex
@@ -41,3 +43,30 @@ with patch.object(push,'CACHE',folder),patch.object(push,'LEDGER',folder/'ledger
         shock=dict(candidate,event_id='SHOCK',attribution='Market or sector shock excluded')
         assert push.deliver([excluded,shock],allow_unreviewed=True)['sent']==0
 print('Entry-time alerts, no profit dependency, strict gates, offline safety, deduplication and failed-delivery retry verified.')
+
+telegram={'enabled':True,'provider':'telegram','token':'123456789:TEST_ONLY_TOKEN_NOT_A_REAL_CREDENTIAL',
+          'chat_id':'123456789'}
+with patch.dict(os.environ,{'TELEGRAM_BOT_TOKEN':telegram['token'],'TELEGRAM_CHAT_ID':telegram['chat_id']}):
+    assert push.config()==telegram
+with patch.dict(os.environ,{'TELEGRAM_BOT_TOKEN':telegram['token'],'TELEGRAM_CHAT_ID':''}):
+    try:push.config();raise AssertionError('Incomplete Telegram config must not fall back to ntfy')
+    except ValueError:pass
+with patch('requests.post') as post:
+    post.return_value.ok=True
+    post.return_value.json.return_value={'ok':True,'result':{'message_id':17,'chat':{'id':123456789}}}
+    receipt=push.publish(telegram,'TEST','Test body','https://example.com/report')
+    payload=post.call_args.kwargs['json']
+    assert payload['disable_notification'] is False and 'parse_mode' not in payload
+    assert payload['chat_id']==telegram['chat_id'] and 'https://example.com/report' in payload['text']
+    assert receipt['provider']=='telegram' and receipt['message_id']=='17'
+    assert telegram['token'] not in json.dumps(receipt) and telegram['chat_id'] not in json.dumps(receipt)
+    post.side_effect=requests.ConnectionError('URL containing '+telegram['token'])
+    try:push.publish(telegram,'TEST','body');raise AssertionError('Expected failure')
+    except ValueError as exc:assert telegram['token'] not in str(exc)
+with patch.object(push,'CACHE',folder),patch.object(push,'LEDGER',folder/'ledger.json'),patch.object(push,'config',return_value=telegram):
+    with patch.object(push,'publish',side_effect=ValueError('simulated Telegram outage')):
+        assert push.deliver([row])['status']=='error'
+    with patch.object(push,'publish',return_value={'message_id':'telegram-retry','provider':'telegram'}) as sender:
+        assert push.deliver([row])['sent']==1
+        assert push.deliver([row])['sent']==0 and sender.call_count==1
+print('Telegram notifications, secret redaction, incomplete configuration, independent channel deduplication and retry verified.')
