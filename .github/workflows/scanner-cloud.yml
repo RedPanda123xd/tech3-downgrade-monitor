@@ -1,0 +1,47 @@
+name: Technology downgrade monitor
+
+on:
+  workflow_dispatch:
+    inputs:
+      send_test:
+        description: Send one clearly labelled cloud test notification
+        required: false
+        type: boolean
+        default: false
+  # Enable a schedule only after the first successful cloud-data and push test.
+  # schedule:
+  #   - cron: '5,20,35,50 8,13,14,18,19,21,22,23 * * 1-5'
+  #     timezone: Europe/Berlin
+
+permissions:
+  contents: write
+
+concurrency:
+  group: technology-downgrade-monitor
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: '3.10'
+      - name: Install scanner dependencies
+        run: python -m pip install -r research/scanner_requirements.txt
+      - name: Verify entry timing and notification gates
+        run: |
+          python -X utf8 research/check_opportunity_scanner.py
+          python -X utf8 research/check_opportunity_push.py
+          python -X utf8 research/check_cloud_opportunity_runner.py
+      - name: Check signals and send supported entry alerts
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          CLOUD_SEND_TEST: ${{ inputs.send_test && '1' || '0' }}
+        run: python -X utf8 research/cloud_opportunity_runner.py
