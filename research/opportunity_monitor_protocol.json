@@ -1,0 +1,21 @@
+{
+  "rules": {
+    "TECH3_SMA5": "Technology, decline \u22653%, SMA5, next US open, 20 sessions",
+    "TECH1_SMA5": "Technology, decline \u22651%, SMA5, next US open, 20 sessions",
+    "ALL4_5_OPEN": "All sectors, decline 4\u2013<5%, next US open, 20 sessions"
+  },
+  "active_rules": [
+    "TECH3_SMA5"
+  ],
+  "holding_sessions": 20,
+  "selected_leverage": 5,
+  "entry": "Next eligible regular US open, America/New_York",
+  "equal_trade_weight": true,
+  "shared_cash_constraint": false,
+  "costs_spreads_financing": 0,
+  "reaction_market_exclusions": {
+    "SPY_absolute": 0.02,
+    "XLK_absolute_for_technology": 0.03
+  },
+  "allow_unreviewed_candidate_alerts": true
+}
