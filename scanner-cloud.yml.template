@@ -8,6 +8,11 @@ on:
         required: false
         type: boolean
         default: false
+      pair_code:
+        description: One-time code sent to your private Telegram bot
+        required: false
+        type: string
+        default: ''
   # Enable a schedule only after the first successful cloud-data and push test.
   # schedule:
   #   - cron: '5,20,35,50 8,13,14,18,19,21,22,23 * * 1-5'
@@ -39,9 +44,19 @@ jobs:
           python -X utf8 research/check_opportunity_scanner.py
           python -X utf8 research/check_opportunity_push.py
           python -X utf8 research/check_cloud_opportunity_runner.py
+          python -X utf8 research/check_pair_telegram.py
+      - name: Send private Telegram pairing instructions
+        if: github.event_name == 'workflow_dispatch' && inputs.pair_code != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_PAIR_CODE: ${{ inputs.pair_code }}
+        run: python -X utf8 research/pair_telegram.py
       - name: Check signals and send supported entry alerts
+        if: inputs.pair_code == ''
         env:
           GITHUB_TOKEN: ${{ github.token }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_CHAT_ID != '' && secrets.TELEGRAM_BOT_TOKEN || '' }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           CLOUD_SEND_TEST: ${{ inputs.send_test && '1' || '0' }}
         run: python -X utf8 research/cloud_opportunity_runner.py
