@@ -41,7 +41,8 @@
   "last_price_session": "2026-11-10",
   "last_ratings_session": "2026-11-11",
   "cloud_test": {
-    "message_id": "gh0c1bubtnYc",
-    "accepted_utc": "2026-11-11T22:00:04.776273+00:00"
+    "message_id": "6",
+    "provider": "telegram",
+    "accepted_utc": "2026-11-11T22:50:06.657580+00:00"
   }
 }
