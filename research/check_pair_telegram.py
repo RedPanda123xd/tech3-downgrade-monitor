@@ -9,6 +9,7 @@ code='verbinden-'+'a'*24
 base={'message':{'chat':{'id':123456789,'type':'private'},'text':code,'date':1000}}
 assert pair.recipient([base],code,1010)=='123456789'
 assert pair.recipient([{'message':dict(base['message'],text=' '+code+'\n')}],code,1010)=='123456789'
+assert pair.recipient([{'message':dict(base['message'],text='Bitte senden: `'+code+'`.')}],code,1010)=='123456789'
 for updates in [[],[{'message':dict(base['message'],text='/start')}],
                 [{'message':dict(base['message'],date=1)}],
                 [{'message':dict(base['message'],chat={'id':123,'type':'group'})}],

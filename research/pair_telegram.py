@@ -19,10 +19,13 @@ def api(token,method,payload):
 
 def recipient(updates,code,now):
     matches=set()
+    # Possession of the full random nonce proves pairing even when the user
+    # copies explanatory text, Markdown or a differently rendered hyphen.
+    nonce=re.compile(r'(?<![0-9a-f])'+re.escape(code.removeprefix('verbinden-'))+r'(?![0-9a-f])',re.I)
     for update in updates:
         message=update.get('message',{})
         chat=message.get('chat',{})
-        if (chat.get('type')=='private' and message.get('text','').strip() in {code,'/start '+code}
+        if (chat.get('type')=='private' and nonce.search(message.get('text',''))
                 and 0<=now-message.get('date',0)<=1800 and isinstance(chat.get('id'),int)
                 and chat['id']>0):
             matches.add(str(chat['id']))
@@ -42,6 +45,12 @@ def main():
     print('Configured public bot: @'+username,flush=True)
     updates=api(token,'getUpdates',{'timeout':0,'limit':100,'allowed_updates':['message']})
     print('Pending private messages: '+str(sum(u.get('message',{}).get('chat',{}).get('type')=='private' for u in updates)),flush=True)
+    nonce=code.removeprefix('verbinden-')
+    coded=[u['message'] for u in updates if u.get('message',{}).get('chat',{}).get('type')=='private'
+           and nonce in u.get('message',{}).get('text','').lower()]
+    print('Private messages containing the complete pairing nonce: '+str(len(coded)),flush=True)
+    if coded:
+        print('Matching timestamps within the allowed 30-minute window: '+str(sum(0<=time.time()-m.get('date',0)<=1800 for m in coded)),flush=True)
     chat=recipient(updates,code,time.time())
     print('::add-mask::'+chat,flush=True)
     result=api(token,'sendMessage',{
