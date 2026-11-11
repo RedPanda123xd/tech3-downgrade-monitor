@@ -22,7 +22,7 @@ def recipient(updates,code,now):
     for update in updates:
         message=update.get('message',{})
         chat=message.get('chat',{})
-        if (chat.get('type')=='private' and message.get('text') in {code,'/start '+code}
+        if (chat.get('type')=='private' and message.get('text','').strip() in {code,'/start '+code}
                 and 0<=now-message.get('date',0)<=1800 and isinstance(chat.get('id'),int)
                 and chat['id']>0):
             matches.add(str(chat['id']))
@@ -36,7 +36,12 @@ def main():
     code=os.environ.get('TELEGRAM_PAIR_CODE','').strip()
     if not re.fullmatch(r'[0-9]+:[A-Za-z0-9_-]{20,}',token):raise ValueError('TELEGRAM_BOT_TOKEN secret is missing or invalid')
     if not re.fullmatch(r'verbinden-[0-9a-f]{24}',code):raise ValueError('Invalid one-time pairing code')
+    bot=api(token,'getMe',{})
+    username=bot.get('username','') if isinstance(bot,dict) else ''
+    if not re.fullmatch(r'[A-Za-z0-9_]+',username):raise ValueError('Telegram returned no bot username')
+    print('Configured public bot: @'+username,flush=True)
     updates=api(token,'getUpdates',{'timeout':0,'limit':100,'allowed_updates':['message']})
+    print('Pending private messages: '+str(sum(u.get('message',{}).get('chat',{}).get('type')=='private' for u in updates)),flush=True)
     chat=recipient(updates,code,time.time())
     print('::add-mask::'+chat,flush=True)
     result=api(token,'sendMessage',{
