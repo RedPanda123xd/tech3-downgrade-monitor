@@ -1,0 +1,40 @@
+{
+  "attribution_reviews": {
+    "AAPL_2026-11-04": {
+      "verdict": "excluded",
+      "evidence_url": "https://www.tipranks.com/news/apple-stock-falls-after-earnings-aletheia-capital-keeps-sell-rating-on-margin-concerns",
+      "explanation": "Contemporaneous November 3 reporting identifies the November 2 earnings and margin outlook as competing catalysts. The later downgrade-associated fall cannot be isolated as an analyst-only move.",
+      "reviewed_at": "2026-11-11"
+    },
+    "IT_2026-11-04": {
+      "verdict": "excluded",
+      "evidence_url": "https://investor.gartner.com/static-files/7b280338-ac38-407c-9c3f-c0766d3411db",
+      "explanation": "Gartner reported quarterly results and updated its financial outlook on November 3. This is a material competing catalyst for the following downgrade cluster.",
+      "reviewed_at": "2026-11-11"
+    },
+    "NVDA_2026-11-09": {
+      "verdict": "excluded",
+      "evidence_url": "https://www.kiplinger.com/investing/stocks/dow-adds-1-104-points-even-as-nvidia-stock-sinks-stock-market-today",
+      "explanation": "The contemporaneous market recap identifies substantial company-specific leadership news alongside the downgrade and a broad-market rally. The decline cannot be assigned cleanly to the analyst opinion.",
+      "reviewed_at": "2026-11-11"
+    },
+    "AKAM_2026-11-11": {
+      "verdict": "excluded",
+      "evidence_url": "https://www.gurufocus.com/news/9192531/akamai-technologies-akam-gains-15-premarket-despite-evercore-isi-downgrade",
+      "explanation": "The downgrade report discusses a recent convertible-note offering, a material competing company event. Premarket shares were rising in this report, which does not support an analyst-caused decline.",
+      "reviewed_at": "2026-11-11"
+    },
+    "NVDA_2026-11-11": {
+      "verdict": "unverifiable",
+      "evidence_url": "https://dailytradealert.com/2026/11/11/analyst-upgrades-and-downgrades-for-wednesday-11-11/",
+      "explanation": "The dated analyst table confirms the Baird downgrade, but a completed downgrade-attributed decline has not been established. The date-only reaction session is November 12 and has not completed. Contemporaneous search results mention a company leadership/policy backdrop and shares recovering; original Reuters/Yahoo/Investing report pages could not be opened to verify their timing and causal account. Do not certify a clean analyst-caused fall from the ratings table or snippets. Revisit when completed reaction prices and accessible contemporaneous evidence are available.",
+      "competing_news_checked": false,
+      "reviewed_at": "2026-11-11T17:22:03.676596+00:00",
+      "review_state": "Pending completed reaction and accessible original reporting",
+      "attempted_report_urls": [
+        "https://www.investing.com/news/stock-market-news/baird-downgrades-nvidia-on-china-curbs-ai-demand-worries-5019212",
+        "https://finance.yahoo.com/markets/article/icarus-rise-and-fall-analyst-downgrades-nvidia-stock-amid-jensen-huang-woes-highlights-risks-131204555.html"
+      ]
+    }
+  }
+}

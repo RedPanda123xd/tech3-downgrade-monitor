@@ -1,0 +1,15 @@
+{
+  "research/opportunity_scanner.py": "b0c6b22969cbb4dde3760341241f14758bdaec87b8b3ebead11639b7623006dc",
+  "research/opportunity_push.py": "5c76f2eddb8ea1da843a66941ac9c50953744dcebbcdbaab1668e0a6742ea2ea",
+  "research/rating_table_parser.py": "25a6d2ecd73df1570993e4b7a4e7a33740b8433bcab5d19ec257c417df063855",
+  "research/scanner_requirements.txt": "25039e01c5bc900c30a5c8d513a3359c3b7cc8ef64812f4229fc0d75395d5ab3",
+  "research/cloud_opportunity_runner.py": "836af99efc5c5a3359b774be943d61a44f0ef83bbf5b7b0ba09b1db8ac46cb94",
+  "research/check_opportunity_scanner.py": "d7fe2cfa71e24c65b65e1b5f2fcce68f3f3ac07baad71f65d41f3a881a833dab",
+  "research/check_opportunity_push.py": "aaddeb7d45c753c39c50b57879daf95c1fc2608095872182c037143baedf3d9d",
+  "research/check_cloud_opportunity_runner.py": "d5d64d885e8915dcb8a1a72c134eacbfa98ee57d139da141654c5cd716495e61",
+  "research/opportunity_monitor_protocol.json": "4a1f8b7f20585f0d98230f12d6b07cc6970029b6fadc3b8927c1b38a180f05ac",
+  "README.md": "b5b2fc815f5c51a9d85d941e83ad9e7aec78bb2746c5cf1f52e7b13bd99420cf",
+  "scanner-cloud.yml.template": "25d65051dfc68f3c04867d8431839cafb233fb4e8c7ce3fbae2e41aae703690d",
+  "monitor-state.json": "ac7bb4b0fa0271626b841ab3a26b41962dd44ceaec783fbc0b2dbcffb4876642",
+  ".gitignore": "2991b11a94561c31567f928ecb2b1d7008906d6fbb102021b27b84271ef637f0"
+}
