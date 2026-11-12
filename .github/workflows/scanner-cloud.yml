@@ -1,9 +1,17 @@
 name: Technology downgrade monitor
-run-name: "TECH3 scan - ${{ github.event_name }}"
+run-name: "TECH3 scan - ${{ inputs.trigger_source || github.event_name }}"
 
 on:
   workflow_dispatch:
     inputs:
+      trigger_source:
+        description: Source label for the dispatch
+        type: choice
+        required: false
+        default: manual
+        options:
+          - manual
+          - cloudflare
       send_test:
         description: Send one clearly labelled cloud test notification
         required: false
