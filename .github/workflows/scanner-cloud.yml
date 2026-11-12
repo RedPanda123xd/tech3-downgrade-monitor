@@ -22,9 +22,6 @@ on:
         required: false
         type: string
         default: ''
-  schedule:
-    # Explicit UTC; every 15 minutes during the monitoring day.
-    - cron: '13,28,43,58 6-23 * * 1-5'
 
 permissions:
   contents: write
@@ -68,3 +65,4 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           CLOUD_SEND_TEST: ${{ inputs.send_test && '1' || '0' }}
         run: python -X utf8 research/cloud_opportunity_runner.py
+
