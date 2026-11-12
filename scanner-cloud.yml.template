@@ -1,9 +1,17 @@
 name: Technology downgrade monitor
-run-name: "TECH3 scan - ${{ github.event_name }}"
+run-name: "TECH3 scan - ${{ inputs.trigger_source || github.event_name }}"
 
 on:
   workflow_dispatch:
     inputs:
+      trigger_source:
+        description: Source label for the dispatch
+        type: choice
+        required: false
+        default: manual
+        options:
+          - manual
+          - cloudflare
       send_test:
         description: Send one clearly labelled cloud test notification
         required: false
@@ -14,9 +22,7 @@ on:
         required: false
         type: string
         default: ''
-  # Enable a schedule only after the first successful cloud-data and push test.
-  # schedule:
-  #   - cron: '13,28,43,58 6-23 * * 1-5'
+  # Cloudflare Workers Free dispatches this workflow; keep workflow_dispatch enabled.
 
 permissions:
   contents: write
