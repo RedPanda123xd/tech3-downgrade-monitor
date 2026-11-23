@@ -44,9 +44,5 @@
     "message_id": "6",
     "provider": "telegram",
     "accepted_utc": "2026-11-11T22:50:06.657580+00:00"
-  },
-  "last_failure": {
-    "reason": "The public-data scanner failed; no complete check can be confirmed.",
-    "at_utc": "2026-11-23T18:29:18.751623+00:00"
   }
 }
