@@ -38,11 +38,21 @@
     }
   },
   "last_market_session": "2026-11-23",
-  "last_price_session": "2026-11-20",
+  "last_price_session": "2026-11-23",
   "last_ratings_session": "2026-11-23",
   "cloud_test": {
     "message_id": "6",
     "provider": "telegram",
     "accepted_utc": "2026-11-11T22:50:06.657580+00:00"
+  },
+  "push_delivery": {
+    "telegram:candidate:NVDA_2026-11-18_2026-11-24": {
+      "message_id": "7",
+      "provider": "telegram",
+      "accepted_utc": "2026-11-24T06:14:35.129895+00:00",
+      "ticker": "NVDA",
+      "entry": "2026-11-24",
+      "kind": "candidate"
+    }
   }
 }
